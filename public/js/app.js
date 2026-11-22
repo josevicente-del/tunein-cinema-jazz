@@ -660,6 +660,30 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       }
+
+      // 5. AzuraCast (Cinema Radio Madrid)
+      if (station.metadataType === 'azuracast') {
+        const res = await fetch(station.nowPlayingApi, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data && data.now_playing && data.now_playing.song) {
+          const songInfo = data.now_playing.song;
+          let song = songInfo.title || songInfo.text || 'Banda Sonora en Emisión';
+          let composer = songInfo.artist || 'Compositor de Cine';
+          let album = songInfo.album || 'Banda Sonora Original';
+          let artwork = songInfo.art || '';
+
+          // Si el artwork es el genérico o viene vacío, enriquecer con iTunes
+          if (!artwork || artwork.includes('default') || artwork.includes('generic')) {
+            const itunesData = await fetchItunesEnrichment(`${composer} ${song}`);
+            if (itunesData && itunesData.artwork) {
+              artwork = itunesData.artwork;
+            }
+          }
+
+          return { song, composer, album, artwork: artwork || station.logo };
+        }
+      }
     } catch (error) {
       console.warn(`[Now Playing] Error consultando metadatos para ${station.name}:`, error);
     }

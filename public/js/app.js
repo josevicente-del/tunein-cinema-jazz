@@ -804,9 +804,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
+      const currentEpg = (typeof analogEpgService !== 'undefined') ? analogEpgService.getScheduleForStation(station.id) : null;
+      const context = {
+        station,
+        title: currentEpg ? currentEpg.title : '',
+        query: currentEpg ? `${station.name} ${currentEpg.title}` : station.name
+      };
+
       const result = await ahaShazamIdentifier.identifyPlayingMusic({
         isAutomatic: true,
         audioElement: player.audio,
+        context,
         onProgress: (progress) => {
           const { state, message, progress: secs } = progress;
           if (ahaStatusText) ahaStatusText.textContent = message;
@@ -1200,7 +1208,22 @@ document.addEventListener('DOMContentLoaded', () => {
       ahaListenBtn.classList.add('is-listening');
       if (ahaStatusIndicator) ahaStatusIndicator.style.display = 'flex';
 
-      await ahaShazamIdentifier.identifyPlayingMusic((progress) => {
+      const currentStation = player.currentStation;
+      const currentEpg = (currentStation && typeof analogEpgService !== 'undefined') 
+        ? analogEpgService.getScheduleForStation(currentStation.id) 
+        : null;
+
+      const context = {
+        station: currentStation,
+        title: currentEpg ? currentEpg.title : '',
+        query: currentEpg ? `${currentStation.name} ${currentEpg.title}` : (currentStation ? currentStation.name : '')
+      };
+
+      await ahaShazamIdentifier.identifyPlayingMusic({
+        isAutomatic: false,
+        audioElement: player.audio,
+        context,
+        onProgress: (progress) => {
         const { state, message, progress: secs, result, error } = progress;
 
         if (ahaStatusText) {

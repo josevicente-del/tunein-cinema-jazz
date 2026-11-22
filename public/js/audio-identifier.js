@@ -159,6 +159,59 @@ class AhaShazamIdentifierService {
   }
 
   /**
+   * Envía la muestra de audio a nuestra función serverless /api/identify
+   * que utiliza el motor nativo de Shazam de forma 100% gratuita y sin límites de cuota.
+   * @param {Blob} audioBlob
+   * @returns {Promise<Object|null>}
+   */
+  async recognizeWithShazamServerless(audioBlob) {
+    try {
+      // Convertir audioBlob a Base64
+      const arrayBuffer = await audioBlob.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      let binary = '';
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64Audio = btoa(binary);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      const response = await fetch('/api/identify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ audioBase64: base64Audio }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        console.warn(`[ShazamServerless] Status HTTP: ${response.status}`);
+        return null;
+      }
+
+      const data = await response.json();
+      if (data && data.success && data.match && data.song) {
+        return {
+          song: data.song,
+          composer: data.composer,
+          album: data.album || 'Banda Sonora / Álbum Oficial',
+          artwork: data.artwork || '',
+          songLink: data.url || '',
+          recognizedBy: 'Shazam Official Engine (100% Free & Unlimited)'
+        };
+      }
+      return null;
+    } catch (err) {
+      console.warn('[ShazamServerless] Fallo o timeout en reconocimiento:', err.message);
+      return null;
+    }
+  }
+
+  /**
    * Envía la muestra acústica grabada a la API de reconocimiento de AudD
    * con control estricto de timeout y extracción de carátula en alta definición.
    * @param {Blob} audioBlob 
@@ -309,10 +362,15 @@ class AhaShazamIdentifierService {
         isAutomatic
       });
 
-      // Intento 1: Reconocimiento acústico
-      let identified = await this.recognizeWithAudD(audioBlob);
+      // Intento 1 (Principal): Shazam Serverless Engine (100% Gratuito, Sin Cuota)
+      let identified = await this.recognizeWithShazamServerless(audioBlob);
 
-      // Intento 2 (Fallback inteligente): Si la huella no dio resultado y disponemos de contexto de programa
+      // Intento 2 (Alternativa acústica): AudD
+      if (!identified) {
+        identified = await this.recognizeWithAudD(audioBlob);
+      }
+
+      // Intento 3 (Fallback inteligente por catálogo): Contexto de emisora / EPG
       if (!identified && context && (context.title || context.query)) {
         identified = await this.queryContextualCatalog(context);
       }

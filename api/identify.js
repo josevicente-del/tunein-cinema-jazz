@@ -110,7 +110,8 @@ module.exports = async function handler(req, res) {
     console.error('[API Identify Error]:', err.message);
     return res.status(500).json({
       success: false,
-      error: err.message || 'Error procesando la muestra acústica en el servidor.'
+      error: err.message,
+      stack: err.stack
     });
   }
 };

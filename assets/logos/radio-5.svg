@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-r5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#031638"/>
+      <stop offset="50%" stop-color="#0f2b6b"/>
+      <stop offset="100%" stop-color="#020d24"/>
+    </linearGradient>
+    <linearGradient id="blue-r5-badge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <filter id="glow-r5" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Fondo 16:9 con borde -->
+  <rect width="320" height="180" rx="16" fill="url(#bg-r5)"/>
+  <rect x="1.5" y="1.5" width="317" height="177" rx="14.5" fill="none" stroke="#3b82f6" stroke-width="1.8" stroke-opacity="0.35"/>
+
+  <!-- Retícula de esfera terrestre informativa -->
+  <g opacity="0.12" stroke="#60a5fa" stroke-width="1.8" fill="none">
+    <circle cx="82" cy="90" r="50"/>
+    <ellipse cx="82" cy="90" rx="28" ry="50"/>
+    <line x1="32" y1="90" x2="132" y2="90"/>
+    <line x1="42" y1="65" x2="122" y2="65"/>
+    <line x1="42" y1="115" x2="122" y2="115"/>
+  </g>
+
+  <!-- Emblema Principal: R5 Oficial -->
+  <g transform="translate(38, 42)">
+    <circle cx="44" cy="48" r="42" fill="#1d4ed8" opacity="0.3" filter="url(#glow-r5)"/>
+    <rect width="88" height="96" rx="22" fill="url(#blue-r5-badge)"/>
+    
+    <!-- Tipografía del 5 estilizado -->
+    <text x="44" y="66" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="52" font-weight="900" text-anchor="middle" letter-spacing="-1.5">5</text>
+    
+    <!-- Mini badge inferior RTVE -->
+    <rect x="22" y="72" width="44" height="12" rx="4" fill="rgba(0, 0, 0, 0.4)"/>
+    <text x="44" y="81" fill="#bfdbfe" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="8" font-weight="900" text-anchor="middle" letter-spacing="1">RNE</text>
+  </g>
+
+  <!-- Tipografía y Metadatos de Radio 5 -->
+  <g transform="translate(142, 44)">
+    <text x="0" y="24" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="25" font-weight="900" letter-spacing="-0.5">RADIO 5</text>
+    
+    <!-- Píldora Institucional -->
+    <rect x="0" y="34" width="124" height="23" rx="7" fill="url(#blue-r5-badge)"/>
+    <text x="62" y="50" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="11" font-weight="900" text-anchor="middle" letter-spacing="1.2">TODO NOTICIAS</text>
+
+    <!-- Subtítulos de cine y noticias -->
+    <text x="0" y="76" fill="#93c5fd" font-family="'Inter', -apple-system, sans-serif" font-size="11.5" font-weight="700" letter-spacing="0.5">DE PELÍCULA · CINE &amp; CULTURA</text>
+    <text x="0" y="93" fill="#60a5fa" font-family="'Inter', -apple-system, sans-serif" font-size="10" font-weight="500" opacity="0.9">INFORMACIÓN NACIONAL RTVE</text>
+  </g>
+</svg>

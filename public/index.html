@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TuneIn Cinema & Jazz — Radio Online en Directo</title>
+  <meta name="description" content="Reproductor de radio PWA en streaming especializado exclusivamente en emisoras de Jazz, Cine y Bandas Sonoras. Sintoniza en directo Radio Klara, Radio 3, Radio 5 y grandes clásicos internacionales.">
+  <meta name="keywords" content="tunein, radio, pwa, jazz, bandas sonoras, cine, radio klara, radio 3, radio 5, streaming">
+  
+  <!-- Configuración PWA y Compatibilidad Móvil -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#080b12">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TuneIn Jazz">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
+
+  <link rel="stylesheet" href="style.css">
+  <!-- Biblioteca Hls.js para reproducción universal de emisiones HLS (.m3u8 de RTVE) sin dependencias de compilador -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+  <!-- Vercel Web Analytics para seguimiento y métricas en producción -->
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+  <!-- Cabecera de navegación superior tipo TuneIn -->
+  <header class="main-header" id="main-header">
+    <div class="header-container">
+      <a href="#" class="brand-wrapper" id="brand-link" aria-label="TuneIn Cinema and Jazz Inicio">
+        <div class="brand-logo-icon">
+          <!-- Icono de antena/radio SVG -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"></path>
+            <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"></path>
+            <circle cx="12" cy="12" r="2.5"></circle>
+            <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"></path>
+            <path d="M19.1 4.9C23 8.8 23 15.2 19.1 19.1"></path>
+          </svg>
+        </div>
+        <div>
+          <span class="brand-title">TuneIn</span>
+          <span class="brand-subtitle">Cinema & Jazz PWA</span>
+        </div>
+      </a>
+
+      <!-- Buscador de emisoras -->
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="search-input" 
+          class="search-input" 
+          placeholder="Buscar por emisora, ciudad, dial o género..." 
+          aria-label="Buscar emisoras de radio"
+        />
+      </div>
+
+      <!-- Acciones de cabecera: Botón PWA e indicador de streaming -->
+      <div class="header-actions">
+        <!-- Botón de acceso directo al identificador de canciones en tiempo real -->
+        <button class="header-identify-btn" id="header-identify-btn" aria-label="Identificar canción en emisión" title="Identificar canción en emisión">
+          <span class="btn-icon">🔍</span>
+          <span class="btn-text">Identificar Música</span>
+        </button>
+
+        <!-- Botón de instalación nativa PWA -->
+        <button class="install-pwa-btn" id="install-pwa-btn" aria-label="Instalar aplicación en dispositivo" title="Instalar App">
+          <span class="install-icon">📲</span>
+          <span class="install-text">Instalar App</span>
+        </button>
+
+        <!-- Indicador de streaming en vivo y protocolo dual -->
+        <div class="header-badge" id="live-indicator-badge">
+          <span class="pulse-dot"></span>
+          <span>HLS + MP3 LIVE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Barra de Estadísticas en Vivo (Contadores de Visitantes Online y Totales) -->
+  <section class="stats-bar-wrapper" id="stats-section" aria-label="Estadísticas de audiencia en tiempo real">
+    <div class="stats-bar-container">
+      
+      <div class="stat-card stat-online" title="Oyentes y visitantes navegando y sintonizando en este momento">
+        <span class="live-dot-pulse" aria-hidden="true"></span>
+        <div class="stat-text-group">
+          <span class="stat-label">En Línea Ahora</span>
+          <div class="stat-value-row">
+            <span class="stat-number" id="online-counter">1</span>
+            <span class="stat-unit" id="online-unit">visitante activo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-divider" aria-hidden="true"></div>
+
+      <div class="stat-card stat-total" title="Visitas acumuladas globales reales registradas en la nube">
+        <span class="stat-icon-badge" aria-hidden="true">👥</span>
+        <div class="stat-text-group">
+          <span class="stat-label">Visitas Reales</span>
+          <div class="stat-value-row">
+            <span class="stat-number" id="total-counter">--</span>
+            <span class="stat-unit" id="total-unit">visitas totales</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-divider" aria-hidden="true"></div>
+
+      <div class="stat-card stat-pwa-status" title="Estado de la aplicación web progresiva">
+        <span class="pwa-badge-icon" aria-hidden="true">⚡</span>
+        <div class="stat-text-group">
+          <span class="stat-label">Modo PWA</span>
+          <span class="stat-value-text" id="pwa-status-text">Instalable & Offline Shell</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Contenido Principal -->
+  <main class="main-content" id="main-content">
+    
+    <!-- Hero Banner informativo con estética cinematográfica -->
+    <section class="hero-banner" id="hero-banner" aria-labelledby="hero-title">
+      <span class="hero-tag">Colección Exclusiva de Emisoras</span>
+      <h1 class="hero-title" id="hero-title">
+        La Esencia del <span>Cine</span> y el <span>Jazz</span> en Tiempo Real
+      </h1>
+      <p class="hero-desc">
+        Sintoniza las mejores bandas sonoras, composiciones cinematográficas y los gigantes del jazz clásico y contemporáneo.
+        Con emisión directa garantizada de <strong>Radio Klara (Valencia)</strong>, <strong>Radio 3 (RNE)</strong> y <strong>Radio 5 (RNE)</strong>.
+      </p>
+
+      <div class="hero-features">
+        <div class="hero-feature-item">
+          <span>⚡ Protocolo Adaptativo HLS + Icecast Direct</span>
+        </div>
+        <div class="hero-feature-item">
+          <span>🛡️ Cero Restricciones CORS</span>
+        </div>
+        <div class="hero-feature-item">
+          <span>📱 Progressive Web App (PWA) Lista</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Barra de selección de categorías / filtros -->
+    <nav class="filter-bar" id="category-filter-bar" aria-label="Filtro de categorías de radio">
+      <button class="filter-btn active" data-category="all" id="filter-all">Todas las Emisoras (15)</button>
+      <button class="filter-btn" data-category="soundtrack" id="filter-soundtrack">🎬 Bandas Sonoras &amp; Cine (8)</button>
+      <button class="filter-btn" data-category="jazz" id="filter-jazz">🎷 Jazz &amp; Bebop (8)</button>
+      <button class="filter-btn" data-category="spanish" id="filter-spanish">🇪🇸 Emisoras Españolas (4)</button>
+      <button class="filter-btn" data-category="favorites" id="filter-favorites">★ Mis Favoritas</button>
+    </nav>
+
+    <!-- Banner Dinámico en Vivo: Canción que está sonando, Carátula del disco, Compositor y Buscador Interactivo -->
+    <section class="now-playing-banner" id="now-playing-banner" aria-label="Información de la canción en reproducción e identificador musical">
+      <div class="np-banner-card" id="np-banner-card">
+        <div class="np-artwork-wrap">
+          <img 
+            src="assets/logos/radio-3.svg" 
+            alt="Carátula o logo de la emisora" 
+            class="np-album-art" 
+            id="np-album-art"
+          />
+        </div>
+        <div class="np-info-wrap">
+          <div class="np-header-row">
+            <span class="np-badge-live" id="np-badge-container">
+              <span class="pulse-dot"></span>
+              <span id="np-badge-text">SONANDO AHORA</span>
+            </span>
+            <span class="np-station-source" id="np-station-source">Radio 3 (RNE)</span>
+          </div>
+
+          <h2 class="np-song-title" id="np-song-title">Cargando sintonía...</h2>
+
+          <div class="np-meta-row" id="np-meta-row">
+            <div class="np-composer-tag" id="np-composer-wrap">
+              <span class="np-icon">🎼</span>
+              <span class="np-label">Compositor:</span>
+              <strong id="np-composer-name">Compositor en emisión</strong>
+            </div>
+            <div class="np-album-tag" id="np-album-wrap">
+              <span class="np-icon">🎬</span>
+              <span class="np-label">Banda Sonora / Álbum:</span>
+              <strong id="np-album-name">Banda Sonora Original</strong>
+            </div>
+          </div>
+
+          <!-- Información EPG de emisión analógica (Programa, Horario, Locutor y Web Oficial) -->
+          <div class="np-epg-details" id="np-epg-details" style="display: none;">
+            <div class="np-epg-meta">
+              <span class="np-epg-presenter" id="np-epg-presenter">🎙️ Locución RNE</span>
+              <span class="np-epg-timeslot" id="np-epg-timeslot">🕒 00:00 - 00:00</span>
+              <span class="np-epg-genre" id="np-epg-genre">Cultura y Música</span>
+              <span class="np-epg-source-tag" id="np-epg-source-tag">🌐 Web Oficial / EPG</span>
+            </div>
+            <p class="np-epg-desc" id="np-epg-desc">Descripción del programa en antena.</p>
+            <div class="np-epg-actions">
+              <a href="#" target="_blank" rel="noopener noreferrer" class="np-epg-link" id="np-epg-link">
+                <span>📋 Ver Escaleta &amp; Playlist Oficial en RTVE</span>
+              </a>
+              <button type="button" class="np-refresh-web-btn" id="np-refresh-web-btn" title="Consultar programación directa de la web de la emisora">
+                <span>🔄 Consultar Web de la Emisora</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Módulo de Reconocimiento Acústico en Vivo Tipo AHA Music & Shazam -->
+          <div class="aha-shazam-box" id="aha-shazam-box">
+            <div class="aha-shazam-card">
+              <div class="aha-shazam-info">
+                <span class="aha-icon-badge">🎙️</span>
+                <div>
+                  <h3 class="aha-title">Identificador Acústico (Tipo AHA Music &amp; Shazam)</h3>
+                  <p class="aha-desc">Pulsa para escuchar la música que suena por tus altavoces o auriculares y detectar título, compositor y carátula.</p>
+                </div>
+              </div>
+              <button type="button" class="aha-listen-btn" id="aha-listen-btn" title="Pulsar para escuchar e identificar">
+                <span class="aha-sonar-wave" aria-hidden="true"></span>
+                <span class="aha-btn-icon">⚡</span>
+                <span id="aha-btn-text">Escuchar e Identificar Ahora</span>
+              </button>
+            </div>
+            <!-- Estado en vivo del reconocedor acústico -->
+            <div class="aha-status-indicator" id="aha-status-indicator" style="display: none;">
+              <span class="aha-spinner"></span>
+              <span id="aha-status-text">🎧 Escuchando audio...</span>
+            </div>
+          </div>
+
+          <!-- Buscador Interactivo en Tiempo Real (Permanente y con Búsqueda Rápida) -->
+          <div class="np-search-container" id="np-search-container">
+            <div class="np-search-bar-header">
+              <span class="np-search-icon">🔍</span>
+              <span class="np-search-label">Buscador Manual e Identificador de Canciones:</span>
+              <span class="np-search-sublabel">Encuentra al instante carátula HD, compositor y tema oficial</span>
+            </div>
+            <form class="np-search-form" id="np-search-form" onsubmit="return false;">
+              <input 
+                type="text" 
+                id="np-search-input" 
+                class="np-search-input" 
+                placeholder="Escribe compositor (Morricone, Williams, Zimmer...), película o verso..." 
+                autocomplete="off"
+              />
+              <button type="submit" id="np-search-btn" class="np-search-btn">
+                <span>🔍 Identificar Canción</span>
+              </button>
+            </form>
+
+            <!-- Sugerencias de Búsqueda Rápida (1 Clic) -->
+            <div class="np-quick-tags" id="np-quick-tags">
+              <span class="np-quick-label">Compositores rápidos:</span>
+              <button type="button" class="np-quick-tag" data-query="Ennio Morricone">Ennio Morricone</button>
+              <button type="button" class="np-quick-tag" data-query="John Williams">John Williams</button>
+              <button type="button" class="np-quick-tag" data-query="Hans Zimmer">Hans Zimmer</button>
+              <button type="button" class="np-quick-tag" data-query="Miles Davis">Miles Davis</button>
+              <button type="button" class="np-quick-tag" data-query="Bernard Herrmann">Bernard Herrmann</button>
+              <button type="button" class="np-quick-tag" data-query="John Coltrane">John Coltrane</button>
+            </div>
+
+            <!-- Contenedor dinámico de resultados de identificación -->
+            <div class="np-search-results" id="np-search-results" style="display: none;"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de emisoras recomendadas / destacadas -->
+    <section class="featured-section" id="featured-section" aria-labelledby="featured-heading">
+      <div class="section-title-wrap">
+        <h2 class="section-title" id="featured-heading">Emisoras Destacadas</h2>
+        <span class="section-subtitle">Sintonización instantánea</span>
+      </div>
+      <div class="featured-row" id="featured-row">
+        <!-- Renderizado dinámico desde stations.js -->
+      </div>
+    </section>
+
+    <!-- Catálogo general de emisoras -->
+    <section class="catalog-section" id="catalog-section" aria-labelledby="catalog-heading">
+      <div class="section-title-wrap">
+        <h2 class="section-title" id="catalog-heading">Dial Completo de Transmisión</h2>
+        <span class="section-subtitle">14 canales seleccionados en directo</span>
+      </div>
+      <div class="stations-grid" id="stations-grid">
+        <!-- Renderizado dinámico desde stations.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Barra de reproducción fija inferior (TuneIn Signature Bottom Player) -->
+  <aside class="bottom-player" id="bottom-player" aria-label="Reproductor de audio en vivo">
+    <div class="player-inner">
+      
+      <!-- Panel Izquierdo: Metadatos de la emisora en sintonía -->
+      <div class="player-station-meta">
+        <img 
+          src="assets/logos/radio-klara.svg" 
+          alt="Logo de la emisora en sintonía" 
+          class="player-logo-thumb" 
+          id="current-station-logo" 
+        />
+        <div class="player-text-wrap">
+          <div class="player-station-title" id="current-station-title">Selecciona una emisora</div>
+          <div class="player-station-dial" id="current-station-dial">Listo para emitir</div>
+        </div>
+        <!-- Visualizador de barras de onda sonora animado -->
+        <div class="visualizer-container" id="audio-visualizer" aria-hidden="true">
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+        </div>
+      </div>
+
+      <!-- Panel Central: Controles de reproducción -->
+      <div class="player-controls-wrapper">
+        <div class="player-buttons-row">
+          <button class="control-btn" id="prev-station-btn" aria-label="Emisora anterior" title="Emisora anterior">
+            ⏮
+          </button>
+          
+          <button class="control-btn play-main-btn" id="play-pause-btn" aria-label="Reproducir o pausar" title="Reproducir / Pausar (Espacio)">
+            <span id="play-icon">▶</span>
+            <span id="pause-icon" style="display: none;">❚❚</span>
+            <span id="spinner-icon" class="mini-spinner" style="display: none;"></span>
+          </button>
+
+          <button class="control-btn" id="next-station-btn" aria-label="Siguiente emisora" title="Siguiente emisora">
+            ⏭
+          </button>
+        </div>
+        <span class="status-badge is-paused" id="live-badge">EN PAUSA</span>
+      </div>
+
+      <!-- Panel Derecho: Control de volumen y categoría -->
+      <div class="player-extra-controls">
+        <span class="active-station-genre-pill" id="active-station-genre">Jazz & Bandas Sonoras</span>
+        <div class="volume-container">
+          <button class="mute-btn" id="mute-btn" aria-label="Silenciar o activar sonido" title="Silenciar (M)">
+            🔊
+          </button>
+          <input 
+            type="range" 
+            id="volume-slider" 
+            class="volume-slider" 
+            min="0" 
+            max="100" 
+            value="80" 
+            aria-label="Control de volumen"
+          />
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Módulos JavaScript de la aplicación -->
+  <script src="js/stations.js"></script>
+  <script src="js/epg-service.js"></script>
+  <script src="js/audio-identifier.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

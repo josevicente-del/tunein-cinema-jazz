@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-sst" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#021329"/>
+      <stop offset="50%" stop-color="#0a2a54"/>
+      <stop offset="100%" stop-color="#020b17"/>
+    </linearGradient>
+    <linearGradient id="cyan-sst" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="gold-sst" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+    <filter id="glow-sst" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Fondo 16:9 con marco sutil -->
+  <rect width="320" height="180" rx="16" fill="url(#bg-sst)"/>
+  <rect x="1.5" y="1.5" width="317" height="177" rx="14.5" fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-opacity="0.35"/>
+
+  <!-- Líneas de ecualizador y partículas cinematográficas en fondo -->
+  <g opacity="0.12" fill="#38bdf8">
+    <rect x="18" y="75" width="3.5" height="35" rx="1.7"/>
+    <rect x="25" y="60" width="3.5" height="65" rx="1.7"/>
+    <rect x="32" y="45" width="3.5" height="95" rx="1.7"/>
+    <rect x="282" y="45" width="3.5" height="90" rx="1.7"/>
+    <rect x="289" y="62" width="3.5" height="60" rx="1.7"/>
+    <rect x="296" y="80" width="3.5" height="25" rx="1.7"/>
+  </g>
+
+  <!-- Emblema Principal: Auriculares con carrete cinematográfico y mando gamer -->
+  <g transform="translate(38, 42)">
+    <circle cx="44" cy="48" r="42" fill="#0284c7" opacity="0.3" filter="url(#glow-sst)"/>
+    <rect width="88" height="96" rx="22" fill="url(#cyan-sst)"/>
+    
+    <!-- Bobina y auricular central -->
+    <circle cx="44" cy="46" r="30" fill="#021329"/>
+    <!-- Diadema de auriculares -->
+    <path d="M26 48 C26 34 34 26 44 26 C54 26 62 34 62 48" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+    <rect x="22" y="44" width="7" height="16" rx="3.5" fill="#fde047"/>
+    <rect x="59" y="44" width="7" height="16" rx="3.5" fill="#fde047"/>
+    <!-- Notas de orquesta / notas musicales de cine -->
+    <circle cx="44" cy="46" r="10" fill="#0a2a54"/>
+    <polygon points="41,40 41,52 50,46" fill="#fde047"/>
+    
+    <!-- Píldora inferior 24/7 -->
+    <rect x="18" y="74" width="52" height="13" rx="4" fill="#021329" stroke="#38bdf8" stroke-width="1.2"/>
+    <text x="44" y="83.5" fill="#38bdf8" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="8.5" font-weight="900" text-anchor="middle" letter-spacing="1">24SEVEN</text>
+  </g>
+
+  <!-- Tipografía Oficial StreamingSoundtracks.com -->
+  <g transform="translate(140, 42)">
+    <text x="0" y="21" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="18" font-weight="900" letter-spacing="-0.3">STREAMING</text>
+    <text x="0" y="39" fill="#38bdf8" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="18" font-weight="900" letter-spacing="-0.3">SOUNDTRACKS</text>
+    
+    <!-- Píldora Red 24seven.FM -->
+    <rect x="0" y="48" width="144" height="22" rx="6" fill="url(#gold-sst)"/>
+    <text x="72" y="63.5" fill="#021329" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="10.5" font-weight="900" text-anchor="middle" letter-spacing="1.1">RED 24SEVEN.FM · CINE</text>
+
+    <!-- Subtítulo temático de videojuegos y cine -->
+    <text x="0" y="88" fill="#bae6fd" font-family="'Inter', -apple-system, sans-serif" font-size="11" font-weight="700" letter-spacing="0.3">CINE, SERIES &amp; VIDEOJUEGOS</text>
+    <text x="0" y="103" fill="#7dd3fc" font-family="'Inter', -apple-system, sans-serif" font-size="9.5" font-weight="500" opacity="0.9">WILLIAMS · ZIMMER · PETICIONES</text>
+  </g>
+</svg>

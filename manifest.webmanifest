@@ -1,0 +1,57 @@
+{
+  "name": "TuneIn Cinema & Jazz — Radio Online",
+  "short_name": "TuneIn Jazz",
+  "description": "Emisoras exclusivas en directo de Jazz, Cine y Bandas Sonoras. Sintoniza Radio Klara, Radio 3, Radio 5 y grandes clásicos internacionales.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#080b12",
+  "theme_color": "#080b12",
+  "orientation": "any",
+  "lang": "es",
+  "categories": ["music", "entertainment", "news"],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Radio Klara (104.4 FM)",
+      "short_name": "Radio Klara",
+      "description": "Sintonizar Radio Klara Valencia",
+      "url": "/#radio-klara",
+      "icons": [{ "src": "assets/logos/radio-klara.svg", "sizes": "320x180" }]
+    },
+    {
+      "name": "Radio 3 (RNE)",
+      "short_name": "Radio 3",
+      "description": "Sintonizar Radio 3 de RNE",
+      "url": "/#radio-3",
+      "icons": [{ "src": "assets/logos/radio-3.svg", "sizes": "320x180" }]
+    },
+    {
+      "name": "Radio 5 (RNE)",
+      "short_name": "Radio 5",
+      "description": "Sintonizar Radio 5 Todo Noticias",
+      "url": "/#radio-5",
+      "icons": [{ "src": "assets/logos/radio-5.svg", "sizes": "320x180" }]
+    },
+    {
+      "name": "CINEMUSIC Francia",
+      "short_name": "CINEMUSIC",
+      "description": "Música de Cine y Bandas Sonoras",
+      "url": "/#cinemusic-radio-france",
+      "icons": [{ "src": "assets/logos/cinemusic.svg", "sizes": "320x180" }]
+    }
+  ]
+}

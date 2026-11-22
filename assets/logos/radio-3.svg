@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-r3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2b0404"/>
+      <stop offset="50%" stop-color="#580d0d"/>
+      <stop offset="100%" stop-color="#180202"/>
+    </linearGradient>
+    <linearGradient id="red-r3-badge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+    <filter id="glow-r3" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Fondo 16:9 con borde -->
+  <rect width="320" height="180" rx="16" fill="url(#bg-r3)"/>
+  <rect x="1.5" y="1.5" width="317" height="177" rx="14.5" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-opacity="0.35"/>
+
+  <!-- Waveform acústica de fondo -->
+  <g opacity="0.14" fill="#ef4444">
+    <rect x="18" y="70" width="3.5" height="40" rx="1.7"/>
+    <rect x="25" y="55" width="3.5" height="70" rx="1.7"/>
+    <rect x="32" y="45" width="3.5" height="90" rx="1.7"/>
+    <rect x="282" y="48" width="3.5" height="84" rx="1.7"/>
+    <rect x="289" y="60" width="3.5" height="60" rx="1.7"/>
+    <rect x="296" y="75" width="3.5" height="30" rx="1.7"/>
+  </g>
+
+  <!-- Emblema Principal: R3 con insignia RTVE -->
+  <g transform="translate(38, 42)">
+    <circle cx="44" cy="48" r="42" fill="#b91c1c" opacity="0.3" filter="url(#glow-r3)"/>
+    <rect width="88" height="96" rx="22" fill="url(#red-r3-badge)"/>
+    
+    <!-- Tipografía del 3 estilizado emblemático -->
+    <text x="44" y="66" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="52" font-weight="900" text-anchor="middle" letter-spacing="-1.5">3</text>
+    
+    <!-- Mini badge inferior RTVE -->
+    <rect x="22" y="72" width="44" height="12" rx="4" fill="rgba(0, 0, 0, 0.4)"/>
+    <text x="44" y="81" fill="#fecaca" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="8" font-weight="900" text-anchor="middle" letter-spacing="1">RNE</text>
+  </g>
+
+  <!-- Tipografía y Metadatos de Radio 3 -->
+  <g transform="translate(142, 44)">
+    <text x="0" y="24" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="25" font-weight="900" letter-spacing="-0.5">RADIO 3</text>
+    
+    <!-- Píldora Institucional -->
+    <rect x="0" y="34" width="98" height="23" rx="7" fill="url(#red-r3-badge)"/>
+    <text x="49" y="50" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="11.5" font-weight="900" text-anchor="middle" letter-spacing="1.2">RTVE AUDIO</text>
+
+    <!-- Subtítulos de programas culturales -->
+    <text x="0" y="76" fill="#fca5a5" font-family="'Inter', -apple-system, sans-serif" font-size="11.5" font-weight="700" letter-spacing="0.5">EL SÉPTIMO VICIO · CINE</text>
+    <text x="0" y="93" fill="#f87171" font-family="'Inter', -apple-system, sans-serif" font-size="10" font-weight="500" opacity="0.9">JAZZ &amp; CULTURA EN DIRECTO</text>
+  </g>
+</svg>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-klara" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#140207"/>
+      <stop offset="45%" stop-color="#2a0510"/>
+      <stop offset="100%" stop-color="#090104"/>
+    </linearGradient>
+    <linearGradient id="red-klara" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#be123c"/>
+    </linearGradient>
+    <linearGradient id="gold-klara" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="glow-klara" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Fondo 16:9 con borde decorativo -->
+  <rect width="320" height="180" rx="16" fill="url(#bg-klara)"/>
+  <rect x="1.5" y="1.5" width="317" height="177" rx="14.5" fill="none" stroke="#f43f5e" stroke-width="1.8" stroke-opacity="0.35"/>
+
+  <!-- Ondas concéntricas de radio en segundo plano -->
+  <g opacity="0.12" stroke="#f43f5e" stroke-width="1.8" fill="none">
+    <circle cx="82" cy="90" r="42"/>
+    <circle cx="82" cy="90" r="64"/>
+    <circle cx="82" cy="90" r="88"/>
+    <circle cx="82" cy="90" r="112"/>
+  </g>
+
+  <!-- Emblema Principal: Escudo circular con micrófono y frecuencias -->
+  <g transform="translate(38, 42)">
+    <!-- Resplandor sutil -->
+    <circle cx="44" cy="48" r="42" fill="#be123c" opacity="0.3" filter="url(#glow-klara)"/>
+    <!-- Insignia principal -->
+    <rect width="88" height="96" rx="22" fill="url(#red-klara)"/>
+    
+    <!-- Microfono y letra K estilizada -->
+    <path d="M44 22 C37 22 32 27 32 34 L32 46 C32 53 37 58 44 58 C51 58 56 53 56 46 L56 34 C56 27 51 22 44 22 Z" fill="#ffffff"/>
+    <!-- Arco acústico -->
+    <path d="M26 42 C26 53 34 62 44 62 C54 62 62 53 62 42" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="44" y1="62" x2="44" y2="76" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+    <line x1="32" y1="76" x2="56" y2="76" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+    <!-- Punto de frecuencia dorada -->
+    <circle cx="68" cy="22" r="5" fill="url(#gold-klara)"/>
+  </g>
+
+  <!-- Tipografía Oficial y Metadatos -->
+  <g transform="translate(142, 44)">
+    <text x="0" y="24" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="24" font-weight="900" letter-spacing="-0.5">RÀDIO KLARA</text>
+    
+    <!-- Píldora de Frecuencia -->
+    <rect x="0" y="34" width="108" height="23" rx="7" fill="url(#red-klara)"/>
+    <text x="54" y="50" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="12" font-weight="900" text-anchor="middle" letter-spacing="1.2">104.4 FM</text>
+
+    <!-- Subtítulo de Ciudad e Historia -->
+    <text x="0" y="76" fill="#fecdd3" font-family="'Inter', -apple-system, sans-serif" font-size="11.5" font-weight="700" letter-spacing="0.6">VALÈNCIA · LA RÀDIO LLIURE</text>
+    <text x="0" y="93" fill="#fda4af" font-family="'Inter', -apple-system, sans-serif" font-size="10" font-weight="500" opacity="0.85">DES DE 1982 · JAZZ &amp; CULTURA</text>
+  </g>
+</svg>

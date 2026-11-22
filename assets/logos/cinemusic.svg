@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-cinemusic" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020817"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+    <linearGradient id="gold-cinema" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <filter id="glow-cinema" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="320" height="180" rx="16" fill="url(#bg-cinemusic)"/>
+  <rect x="1.5" y="1.5" width="317" height="177" rx="14.5" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-opacity="0.35"/>
+
+  <!-- Perforaciones de película de 35mm en bordes -->
+  <g opacity="0.15" fill="#f59e0b">
+    <rect x="8" y="12" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="24" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="36" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="48" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="60" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="72" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="84" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="96" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="108" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="120" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="132" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="144" width="8" height="6" rx="1.5"/>
+    <rect x="8" y="156" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="12" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="24" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="36" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="48" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="60" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="72" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="84" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="96" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="108" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="120" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="132" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="144" width="8" height="6" rx="1.5"/>
+    <rect x="304" y="156" width="8" height="6" rx="1.5"/>
+  </g>
+
+  <!-- Emblema Principal: Bobina de Película Dorada de Cine -->
+  <g transform="translate(38, 42)">
+    <circle cx="44" cy="48" r="42" fill="#d97706" opacity="0.3" filter="url(#glow-cinema)"/>
+    <rect width="88" height="96" rx="22" fill="url(#gold-cinema)"/>
+    
+    <!-- Bobina de Cine de 35mm -->
+    <circle cx="44" cy="45" r="30" fill="#0f172a"/>
+    <circle cx="44" cy="45" r="28" fill="none" stroke="#f59e0b" stroke-width="2"/>
+    <circle cx="44" cy="45" r="8" fill="#f59e0b"/>
+    <!-- Orificios de la bobina -->
+    <circle cx="44" cy="27" r="5" fill="#f59e0b"/>
+    <circle cx="61" cy="40" r="5" fill="#f59e0b"/>
+    <circle cx="55" cy="58" r="5" fill="#f59e0b"/>
+    <circle cx="33" cy="58" r="5" fill="#f59e0b"/>
+    <circle cx="27" cy="40" r="5" fill="#f59e0b"/>
+    
+    <!-- Cinta con la bandera tricolor francesa -->
+    <g transform="translate(29, 81)">
+      <rect width="10" height="4" rx="1" fill="#2563eb"/>
+      <rect x="10" width="10" height="4" fill="#ffffff"/>
+      <rect x="20" width="10" height="4" rx="1" fill="#ef4444"/>
+    </g>
+  </g>
+
+  <!-- Tipografía Oficial CINEMUSIC -->
+  <g transform="translate(142, 44)">
+    <text x="0" y="24" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="24" font-weight="900" letter-spacing="-0.5">CINEMUSIC</text>
+    
+    <!-- Píldora Francia -->
+    <rect x="0" y="34" width="124" height="23" rx="7" fill="url(#gold-cinema)"/>
+    <text x="62" y="50" fill="#020817" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="11" font-weight="900" text-anchor="middle" letter-spacing="1.2">RADIO FRANCE</text>
+
+    <!-- Subtítulo de Cine -->
+    <text x="0" y="76" fill="#fde68a" font-family="'Inter', -apple-system, sans-serif" font-size="11.5" font-weight="700" letter-spacing="0.5">MUSIQUE DE FILM · PARIS</text>
+    <text x="0" y="93" fill="#cbd5e1" font-family="'Inter', -apple-system, sans-serif" font-size="10" font-weight="500" opacity="0.9">LES PLUS GRANDES B.O.</text>
+  </g>
+</svg>

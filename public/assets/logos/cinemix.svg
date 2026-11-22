@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-cinemix" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1128"/>
+      <stop offset="50%" stop-color="#1c2541"/>
+      <stop offset="100%" stop-color="#070c1b"/>
+    </linearGradient>
+    <linearGradient id="gold-cinemix" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="glow-cinemix" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="320" height="180" rx="16" fill="url(#bg-cinemix)"/>
+  <rect x="1.5" y="1.5" width="317" height="177" rx="14.5" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-opacity="0.35"/>
+
+  <!-- Rayos de foco de proyección de cine en fondo -->
+  <g opacity="0.08" fill="#fbbf24">
+    <polygon points="160,0 220,180 180,180 160,0"/>
+    <polygon points="160,0 280,180 250,180 160,0"/>
+  </g>
+
+  <!-- Emblema Principal: Claqueta de Director de Cine -->
+  <g transform="translate(38, 42)">
+    <circle cx="44" cy="48" r="42" fill="#f59e0b" opacity="0.3" filter="url(#glow-cinemix)"/>
+    <rect width="88" height="96" rx="22" fill="url(#gold-cinemix)"/>
+    
+    <!-- Claqueta de Cine -->
+    <rect x="18" y="32" width="52" height="42" rx="6" fill="#0b132b"/>
+    <!-- Barra superior de claqueta con franjas diagonales -->
+    <g transform="translate(18, 22)">
+      <rect width="52" height="12" rx="3" fill="#1e293b"/>
+      <polygon points="6,0 12,0 8,12 2,12" fill="#fbbf24"/>
+      <polygon points="18,0 24,0 20,12 14,12" fill="#fbbf24"/>
+      <polygon points="30,0 36,0 32,12 26,12" fill="#fbbf24"/>
+      <polygon points="42,0 48,0 44,12 38,12" fill="#fbbf24"/>
+    </g>
+    <!-- Triángulo Play central -->
+    <polygon points="40,46 40,62 52,54" fill="#fbbf24"/>
+  </g>
+
+  <!-- Tipografía Cinemix -->
+  <g transform="translate(142, 44)">
+    <text x="0" y="24" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="25" font-weight="900" letter-spacing="-0.5">CINEMIX</text>
+    
+    <!-- Píldora -->
+    <rect x="0" y="34" width="134" height="23" rx="7" fill="url(#gold-cinemix)"/>
+    <text x="67" y="50" fill="#0a1128" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="11" font-weight="900" text-anchor="middle" letter-spacing="1.2">ORIGINAL SCORES</text>
+
+    <!-- Subtítulo -->
+    <text x="0" y="76" fill="#fde68a" font-family="'Inter', -apple-system, sans-serif" font-size="11" font-weight="700" letter-spacing="0.3">MORRICONE · WILLIAMS · ZIMMER</text>
+    <text x="0" y="93" fill="#93c5fd" font-family="'Inter', -apple-system, sans-serif" font-size="10" font-weight="500" opacity="0.9">WORLDWIDE FILM SOUNDTRACKS</text>
+  </g>
+</svg>

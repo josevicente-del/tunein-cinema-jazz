@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="pwa-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+    <linearGradient id="pwa-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#e11d48"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#pwa-bg)"/>
+  <rect x="2" y="2" width="188" height="188" rx="40" fill="none" stroke="url(#pwa-accent)" stroke-width="3" stroke-opacity="0.4"/>
+  
+  <!-- Ondas concéntricas de emisión -->
+  <g fill="none" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round">
+    <path d="M42 144C20 122 20 86 42 64" stroke-opacity="0.3"/>
+    <path d="M58 128C44 114 44 92 58 78" stroke-opacity="0.6"/>
+    <path d="M150 144C172 122 172 86 150 64" stroke-opacity="0.3"/>
+    <path d="M134 128C148 114 148 92 134 78" stroke-opacity="0.6"/>
+  </g>
+
+  <!-- Núcleo central: Torre de radio y notas -->
+  <g transform="translate(96, 104)" fill="url(#pwa-accent)">
+    <circle cx="0" cy="-6" r="14"/>
+    <path d="M-6 8h12l10 32h-32z"/>
+    <!-- Antena emisora -->
+    <line x1="0" y1="-20" x2="0" y2="-40" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round"/>
+    <circle cx="0" cy="-44" r="5" fill="#ffffff"/>
+  </g>
+</svg>

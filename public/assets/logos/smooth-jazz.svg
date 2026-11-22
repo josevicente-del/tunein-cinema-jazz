@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-smooth" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#240316"/>
+      <stop offset="50%" stop-color="#4a082c"/>
+      <stop offset="100%" stop-color="#12010b"/>
+    </linearGradient>
+    <linearGradient id="pink-orange-badge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <filter id="glow-smooth" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="320" height="180" rx="16" fill="url(#bg-smooth)"/>
+  <rect x="1.5" y="1.5" width="317" height="177" rx="14.5" fill="none" stroke="#f43f5e" stroke-width="1.8" stroke-opacity="0.35"/>
+
+  <!-- Ondas sensuales de lounge de fondo -->
+  <g opacity="0.12" stroke="#f43f5e" stroke-width="2" fill="none">
+    <path d="M20 120 C70 90 120 150 170 110 C220 70 270 130 310 90"/>
+    <path d="M20 140 C70 110 120 170 170 130 C220 90 270 150 310 110"/>
+  </g>
+
+  <!-- Emblema Principal: Saxofón Curvo y Copa de Lounge -->
+  <g transform="translate(38, 42)">
+    <circle cx="44" cy="48" r="42" fill="#e11d48" opacity="0.3" filter="url(#glow-smooth)"/>
+    <rect width="88" height="96" rx="22" fill="url(#pink-orange-badge)"/>
+    
+    <!-- Saxofón estilizado de oro y blanco -->
+    <!-- Boquilla y cuello -->
+    <path d="M36 24 C44 24 48 28 48 36 L48 58 C48 68 56 74 66 68 C72 64 72 52 64 50" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round"/>
+    <!-- Campana del saxofón -->
+    <ellipse cx="66" cy="50" rx="8" ry="12" fill="#ffffff" transform="rotate(-20 66 50)"/>
+    <ellipse cx="66" cy="50" rx="5" ry="8" fill="#f43f5e" transform="rotate(-20 66 50)"/>
+    <!-- Llaves del saxofón -->
+    <circle cx="48" cy="38" r="2.5" fill="#fed7aa"/>
+    <circle cx="48" cy="46" r="2.5" fill="#fed7aa"/>
+    <circle cx="48" cy="54" r="2.5" fill="#fed7aa"/>
+  </g>
+
+  <!-- Tipografía Smooth Jazz -->
+  <g transform="translate(142, 44)">
+    <text x="0" y="24" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="23" font-weight="900" letter-spacing="-0.5">SMOOTH JAZZ</text>
+    
+    <!-- Píldora Lounge -->
+    <rect x="0" y="34" width="120" height="23" rx="7" fill="url(#pink-orange-badge)"/>
+    <text x="60" y="50" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="11" font-weight="900" text-anchor="middle" letter-spacing="1.2">LOUNGE CLUB</text>
+
+    <!-- Subtítulo -->
+    <text x="0" y="76" fill="#fbcfe8" font-family="'Inter', -apple-system, sans-serif" font-size="11.5" font-weight="700" letter-spacing="0.5">CHILLOUT &amp; SAXOPHONE</text>
+    <text x="0" y="93" fill="#f472b6" font-family="'Inter', -apple-system, sans-serif" font-size="10" font-weight="500" opacity="0.9">24/7 DOWNTEMPO ATMOSPHERE</text>
+  </g>
+</svg>

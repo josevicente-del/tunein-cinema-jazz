@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-jclass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#120e2e"/>
+      <stop offset="50%" stop-color="#251b54"/>
+      <stop offset="100%" stop-color="#090617"/>
+    </linearGradient>
+    <linearGradient id="purple-badge-jclass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#7e22ce"/>
+    </linearGradient>
+    <filter id="glow-jclass" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="320" height="180" rx="16" fill="url(#bg-jclass)"/>
+  <rect x="1.5" y="1.5" width="317" height="177" rx="14.5" fill="none" stroke="#a855f7" stroke-width="1.8" stroke-opacity="0.35"/>
+
+  <!-- Rayos Blue Note sutiles de fondo -->
+  <g opacity="0.1" stroke="#e9d5ff" stroke-width="1.5" fill="none">
+    <circle cx="82" cy="90" r="45"/>
+    <circle cx="82" cy="90" r="65"/>
+    <circle cx="82" cy="90" r="85"/>
+  </g>
+
+  <!-- Emblema Principal: Trompeta y Vinilo de Maestros del Jazz -->
+  <g transform="translate(38, 42)">
+    <circle cx="44" cy="48" r="42" fill="#7e22ce" opacity="0.3" filter="url(#glow-jclass)"/>
+    <rect width="88" height="96" rx="22" fill="url(#purple-badge-jclass)"/>
+    
+    <!-- Trompeta de Jazz dorada y blanca -->
+    <!-- Campana de trompeta -->
+    <polygon points="68,36 74,28 74,58 68,50" fill="#fef08a"/>
+    <!-- Tubo y pistones -->
+    <line x1="22" y1="43" x2="68" y2="43" stroke="#ffffff" stroke-width="3"/>
+    <!-- Válvulas / pistones -->
+    <line x1="38" y1="34" x2="38" y2="46" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="46" y1="34" x2="46" y2="46" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="54" y1="34" x2="54" y2="46" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- Curva de retroceso -->
+    <path d="M22 43 C16 43 16 51 22 51 L56 51" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+    <!-- Vinilo Blue Note debajo -->
+    <circle cx="44" cy="74" r="14" fill="#120e2e"/>
+    <circle cx="44" cy="74" r="5" fill="#fef08a"/>
+  </g>
+
+  <!-- Tipografía Jazz Classic -->
+  <g transform="translate(142, 44)">
+    <text x="0" y="24" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="23" font-weight="900" letter-spacing="-0.5">JAZZ CLASSIC</text>
+    
+    <!-- Píldora -->
+    <rect x="0" y="34" width="134" height="23" rx="7" fill="url(#purple-badge-jclass)"/>
+    <text x="67" y="50" fill="#ffffff" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-size="11" font-weight="900" text-anchor="middle" letter-spacing="1.2">GREAT MASTERS</text>
+
+    <!-- Subtítulo -->
+    <text x="0" y="76" fill="#e9d5ff" font-family="'Inter', -apple-system, sans-serif" font-size="11" font-weight="700" letter-spacing="0.2">COLTRANE · DAVIS · MONK</text>
+    <text x="0" y="93" fill="#c084fc" font-family="'Inter', -apple-system, sans-serif" font-size="10" font-weight="500" opacity="0.9">TIMELESS JAZZ ANTHOLOGY</text>
+  </g>
+</svg>

@@ -440,6 +440,18 @@ document.addEventListener('DOMContentLoaded', () => {
     currentStationLogo.alt = `Logo de ${station.name}`;
     activeStationPill.textContent = genreText;
 
+    // Actualizar inmediatamente la carátula y el título del banner superior al sintonizar la emisora
+    if (npAlbumArt) {
+      npAlbumArt.src = station.logo;
+      npAlbumArt.alt = `Logo oficial de ${station.name}`;
+    }
+    if (npStationSource) {
+      npStationSource.textContent = `${station.name} (${station.dial})`;
+    }
+    if (npSongTitle && (!player.state || player.state !== 'PLAYING')) {
+      npSongTitle.textContent = `${station.name} · ${station.genre}`;
+    }
+
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: station.name,
@@ -936,8 +948,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!station) return;
 
-    // Asegurar que el banner esté siempre visible
+    // Asegurar que el banner esté siempre visible y actualizado de inmediato con el logo oficial
     if (nowPlayingBanner) nowPlayingBanner.style.display = 'block';
+    if (npAlbumArt) {
+      npAlbumArt.src = station.logo;
+      npAlbumArt.alt = `Logo oficial de ${station.name}`;
+    }
+    if (npStationSource) {
+      npStationSource.textContent = `${station.name} (${station.dial})`;
+    }
 
     // 1. Caso Señal Analógica Tradicional (Radio 3, Radio Clásica, Radio 5 y Radio Klara)
     if (station.isAnalog || station.hasEpgSchedule) {

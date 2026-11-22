@@ -1,9 +1,11 @@
 /**
  * @file js/audio-identifier.js
  * @description Servicio de reconocimiento acústico y metadatos en tiempo real (estilo AHA Music y Shazam).
- * Captura audio nativo en formato WAV PCM (16-bit 16000Hz) en el navegador mediante AudioContext,
- * lo envía a la función serverless /api/identify de Shazam (100% gratuita y sin cuota),
- * y aplica fallback dinámico con metadatos digitales y catálogo oficial.
+ * Ofrece máxima fiabilidad combinando:
+ * 1. Muestreo directo del Stream de la emisora en el servidor de Shazam (sin cortes, calidad HD sin compresión ni ruido ambiental).
+ * 2. Captura acústica en vivo mediante micrófono con remuestreo PCM automático a 16000Hz (estándar Shazam).
+ * 3. Fallback inteligente con catálogo musical (Apple Music / iTunes) y EPG.
+ * 100% Gratuito, sin límites de peticiones ni suscripciones.
  */
 
 class AhaShazamIdentifierService {
@@ -28,8 +30,39 @@ class AhaShazamIdentifierService {
   }
 
   /**
+   * Realiza un remuestreo lineal de audio PCM a la tasa deseada (ej. 44.1k/48k -> 16kHz).
+   * @param {Float32Array} sourceBuffer 
+   * @param {number} sourceRate 
+   * @param {number} targetRate 
+   * @returns {Float32Array}
+   */
+  downsampleBuffer(sourceBuffer, sourceRate, targetRate = 16000) {
+    if (sourceRate === targetRate || sourceRate <= 0) {
+      return sourceBuffer;
+    }
+    const sampleRateRatio = sourceRate / targetRate;
+    const newLength = Math.round(sourceBuffer.length / sampleRateRatio);
+    const result = new Float32Array(newLength);
+    let offsetResult = 0;
+    let offsetSource = 0;
+
+    while (offsetResult < result.length) {
+      const nextOffsetSource = Math.round((offsetResult + 1) * sampleRateRatio);
+      let accum = 0;
+      let count = 0;
+      for (let i = offsetSource; i < nextOffsetSource && i < sourceBuffer.length; i++) {
+        accum += sourceBuffer[i];
+        count++;
+      }
+      result[offsetResult] = count > 0 ? (accum / count) : 0;
+      offsetResult++;
+      offsetSource = nextOffsetSource;
+    }
+    return result;
+  }
+
+  /**
    * Convierte un Float32Array de muestras PCM a un contenedor WAV estándar (16-bit PCM, 16000Hz, Mono).
-   * Este contenedor es universalmente compatible con todos los decodificadores de Shazam y servidores de audio.
    * @param {Float32Array} pcmSamples 
    * @param {number} sampleRate 
    * @returns {Blob}
@@ -67,7 +100,7 @@ class AhaShazamIdentifierService {
     // Escribir muestras PCM de 16 bits
     let offset = 44;
     for (let i = 0; i < pcmSamples.length; i++, offset += 2) {
-      let s = Math.max(-1, Math.min(1, pcmSamples[i]));
+      const s = Math.max(-1, Math.min(1, pcmSamples[i]));
       view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
     }
 
@@ -75,62 +108,40 @@ class AhaShazamIdentifierService {
   }
 
   /**
-   * Captura una muestra de audio limpia de 5 segundos directamente en formato WAV
-   * utilizando la Web Audio API (compatible con todos los navegadores).
+   * Captura una muestra acústica mediante micrófono con remuestreo exacto a 16000Hz.
    * @param {number} durationMs 
    * @param {Function} onTick 
-   * @param {HTMLAudioElement|null} audioElement 
    * @returns {Promise<Blob>}
    */
-  async recordAudioSnippet(durationMs = 5000, onTick = null, audioElement = null) {
-    let audioStream = null;
-
-    // 1. Intentar capturar directamente el audio del reproductor
-    if (audioElement) {
-      try {
-        if (typeof audioElement.captureStream === 'function') {
-          audioStream = audioElement.captureStream();
-        } else if (typeof audioElement.mozCaptureStream === 'function') {
-          audioStream = audioElement.mozCaptureStream();
-        }
-      } catch (e) {
-        console.warn('[AudioIdentifier] captureStream no permitido por CORS:', e.message);
-        audioStream = null;
-      }
+  async recordAudioSnippet(durationMs = 5000, onTick = null) {
+    if (!this.isSupported()) {
+      throw new Error('Tu navegador no soporta captura de audio mediante micrófono.');
     }
 
-    // 2. Si no se pudo capturar directamente el elemento, solicitar entrada de audio/micrófono
-    if (!audioStream || audioStream.getAudioTracks().length === 0) {
-      if (!this.isSupported()) {
-        throw new Error('Tu navegador no soporta captura de audio.');
-      }
-
-      try {
-        audioStream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: false,
-            noiseSuppression: false,
-            autoGainControl: true
-          }
-        });
-      } catch (err) {
-        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-          throw new Error('Permiso de micrófono no concedido para escuchar.');
+    let audioStream = null;
+    try {
+      audioStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: true
         }
-        throw new Error(`Error accediendo al audio: ${err.message}`);
+      });
+    } catch (err) {
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        throw new Error('Permiso de micrófono no concedido para escuchar.');
       }
+      throw new Error(`Error accediendo al audio: ${err.message}`);
     }
 
     this.currentStream = audioStream;
     this.isRecording = true;
 
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    const targetSampleRate = 16000;
-    const audioCtx = new AudioContextClass({ sampleRate: targetSampleRate });
+    const audioCtx = new AudioContextClass();
     this.currentAudioContext = audioCtx;
 
     const source = audioCtx.createMediaStreamSource(audioStream);
-    // Tamaño de buffer estándar para captura
     const bufferSize = 4096;
     const recorderNode = audioCtx.createScriptProcessor(bufferSize, 1, 1);
     const audioData = [];
@@ -144,7 +155,7 @@ class AhaShazamIdentifierService {
     source.connect(recorderNode);
     recorderNode.connect(audioCtx.destination);
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       let secondsLeft = Math.ceil(durationMs / 1000);
       if (typeof onTick === 'function') onTick(secondsLeft);
 
@@ -159,20 +170,17 @@ class AhaShazamIdentifierService {
         clearInterval(countdownInterval);
         this.isRecording = false;
 
-        // Desconectar nodos de audio y cerrar contexto
         try {
           recorderNode.disconnect();
           source.disconnect();
           if (audioCtx.state !== 'closed') audioCtx.close();
         } catch {}
 
-        // Apagar tracks de micrófono para apagar el icono rojo de grabación del navegador
         if (this.currentStream) {
           this.currentStream.getTracks().forEach(track => track.stop());
           this.currentStream = null;
         }
 
-        // Combinar todos los fragmentos Float32Array
         let totalLength = 0;
         for (let i = 0; i < audioData.length; i++) {
           totalLength += audioData[i].length;
@@ -185,8 +193,10 @@ class AhaShazamIdentifierService {
           offset += audioData[i].length;
         }
 
-        // Generar archivo WAV estándar
-        const wavBlob = this.encodeWav(mergedSamples, audioCtx.sampleRate || targetSampleRate);
+        // Remuestrear de la frecuencia nativa del hardware (ej. 44.1k o 48k) a 16000Hz estándar
+        const targetRate = 16000;
+        const downsampled = this.downsampleBuffer(mergedSamples, audioCtx.sampleRate || 44100, targetRate);
+        const wavBlob = this.encodeWav(downsampled, targetRate);
         resolve(wavBlob);
       };
 
@@ -195,28 +205,20 @@ class AhaShazamIdentifierService {
   }
 
   /**
-   * Envía la muestra de audio WAV a nuestra función serverless /api/identify
-   * @param {Blob} audioBlob 
+   * Envía una petición de reconocimiento al backend serverless de Shazam (/api/identify).
+   * Acepta streamUrl (reconocimiento directo de servidor) o audioBase64 (micrófono).
+   * @param {Object} payload { streamUrl, audioBase64 }
    * @returns {Promise<Object|null>}
    */
-  async recognizeWithShazamServerless(audioBlob) {
+  async recognizeWithShazamServerless(payload = {}) {
     try {
-      const arrayBuffer = await audioBlob.arrayBuffer();
-      const bytes = new Uint8Array(arrayBuffer);
-      let binary = '';
-      const len = bytes.byteLength;
-      for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64Audio = btoa(binary);
-
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 12000);
 
       const response = await fetch('/api/identify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ audioBase64: base64Audio }),
+        body: JSON.stringify(payload),
         signal: controller.signal
       });
 
@@ -240,7 +242,7 @@ class AhaShazamIdentifierService {
       }
       return null;
     } catch (err) {
-      console.warn('[ShazamServerless] Fallo o timeout en reconocimiento:', err.message);
+      console.warn('[ShazamServerless] Error o timeout en reconocimiento:', err.message);
       return null;
     }
   }
@@ -251,6 +253,7 @@ class AhaShazamIdentifierService {
    * @returns {Promise<Object|null>}
    */
   async recognizeWithAudD(audioBlob) {
+    if (!audioBlob) return null;
     const formData = new FormData();
     formData.append('file', audioBlob, 'sample.wav');
     formData.append('api_token', this.defaultApiToken);
@@ -300,7 +303,7 @@ class AhaShazamIdentifierService {
 
   /**
    * Fallback Inteligente: Si el motor acústico no encuentra coincidencia directa,
-   * consulta el catálogo musical de Apple Music / iTunes utilizando los datos contextuales de la emisora o EPG.
+   * consulta el catálogo musical de Apple Music / iTunes utilizando los datos contextuales.
    * @param {Object} contextDatos 
    * @returns {Promise<Object|null>}
    */
@@ -338,32 +341,58 @@ class AhaShazamIdentifierService {
   }
 
   /**
-   * Método principal: orquesta la captura acústica en vivo (WAV 5s),
-   * notifica los cambios de estado a la interfaz de usuario y devuelve el resultado.
-   * @param {Function|Object} optionsOrCallback 
+   * Método principal: Orquesta el reconocimiento acústico con máxima fiabilidad:
+   * 1. Prueba reconocimiento directo en servidor mediante la URL del stream de la emisora.
+   * 2. Si la emisora no tiene stream muestreable (ej. HLS) o no hubo match, activa el micrófono WAV remuestreado a 16kHz.
+   * 3. Aplica fallback con catálogo musical oficial.
+   * @param {Object} options 
    * @returns {Promise<Object|null>}
    */
-  async identifyPlayingMusic(optionsOrCallback) {
+  async identifyPlayingMusic(options = {}) {
     let stateCallback = () => {};
     let isAutomatic = false;
-    let audioElement = null;
+    let station = null;
     let context = {};
 
-    if (typeof optionsOrCallback === 'function') {
-      stateCallback = optionsOrCallback;
-    } else if (optionsOrCallback && typeof optionsOrCallback === 'object') {
-      if (typeof optionsOrCallback.onProgress === 'function') stateCallback = optionsOrCallback.onProgress;
-      isAutomatic = !!optionsOrCallback.isAutomatic;
-      audioElement = optionsOrCallback.audioElement || null;
-      context = optionsOrCallback.context || {};
+    if (typeof options === 'function') {
+      stateCallback = options;
+    } else if (options && typeof options === 'object') {
+      if (typeof options.onProgress === 'function') stateCallback = options.onProgress;
+      isAutomatic = !!options.isAutomatic;
+      station = options.station || null;
+      context = options.context || {};
     }
 
     try {
+      // 1. PRIMER INTENTO: Muestreo de stream directo en servidor de Shazam
+      if (station && station.streamUrl && !station.streamUrl.includes('.m3u8')) {
+        stateCallback({
+          state: 'ANALYZING',
+          message: isAutomatic 
+            ? '⚡ Identificando canción directamente del stream digital...' 
+            : '📡 Conectando con la señal en directo y analizando huella acústica...',
+          progress: 0,
+          isAutomatic
+        });
+
+        const directResult = await this.recognizeWithShazamServerless({ streamUrl: station.streamUrl });
+        if (directResult) {
+          stateCallback({
+            state: 'SUCCESS',
+            message: `✨ ¡Canción identificada! ${directResult.song}`,
+            result: directResult,
+            isAutomatic
+          });
+          return directResult;
+        }
+      }
+
+      // 2. SEGUNDO INTENTO: Captura acústica en vivo (micrófono o altavoz)
       stateCallback({
         state: 'LISTENING',
         message: isAutomatic 
-          ? '⚡ Reconociendo música automáticamente en emisión...' 
-          : '🎧 Escuchando audio de la emisora en vivo...',
+          ? '⚡ Escuchando audio en emisión...' 
+          : '🎧 Escuchando audio en directo... Permanece escuchando unos segundos',
         progress: 5,
         isAutomatic
       });
@@ -372,12 +401,12 @@ class AhaShazamIdentifierService {
         stateCallback({
           state: 'LISTENING',
           message: isAutomatic
-            ? `⚡ Identificando canción automáticamente (${secondsLeft}s)...`
+            ? `⚡ Identificando canción (${secondsLeft}s)...`
             : `🎧 Escuchando audio... (${secondsLeft}s restantes)`,
           progress: secondsLeft,
           isAutomatic
         });
-      }, audioElement);
+      });
 
       stateCallback({
         state: 'ANALYZING',
@@ -386,15 +415,24 @@ class AhaShazamIdentifierService {
         isAutomatic
       });
 
-      // 1. Shazam Serverless (Ilimitado y gratuito)
-      let identified = await this.recognizeWithShazamServerless(audioBlob);
+      // Convertir Blob a Base64
+      const arrayBuffer = await audioBlob.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64Audio = btoa(binary);
 
-      // 2. Respaldo secundario AudD
+      // Reconocimiento acústico por Shazam Serverless
+      let identified = await this.recognizeWithShazamServerless({ audioBase64: base64Audio });
+
+      // Respaldo AudD secundario
       if (!identified) {
         identified = await this.recognizeWithAudD(audioBlob);
       }
 
-      // 3. Fallback inteligente contextual
+      // Fallback contextual en Apple Music
       if (!identified && context && (context.title || context.query)) {
         identified = await this.queryContextualCatalog(context);
       }
@@ -414,7 +452,7 @@ class AhaShazamIdentifierService {
           state: 'NOT_FOUND',
           message: isAutomatic
             ? 'Emisión sin música identificable en este fragmento (voz/publicidad).'
-            : 'No se detectó una huella acústica clara en este instante. Prueba con el buscador de canciones.',
+            : 'No se detectó una huella acústica clara en este instante. Prueba de nuevo en unos segundos.',
           result: null,
           isAutomatic
         });
@@ -449,5 +487,5 @@ class AhaShazamIdentifierService {
   }
 }
 
-// Exportar instancia global
+// Exportar instancia global única
 const ahaShazamIdentifier = new AhaShazamIdentifierService();

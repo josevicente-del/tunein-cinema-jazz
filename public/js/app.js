@@ -849,6 +849,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const result = await ahaShazamIdentifier.identifyPlayingMusic({
         isAutomatic: true,
+        station,
         audioElement: player.audio,
         context,
         onProgress: (progress) => {
@@ -1264,6 +1265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       await ahaShazamIdentifier.identifyPlayingMusic({
         isAutomatic: false,
+        station: currentStation,
         audioElement: player.audio,
         context,
         onProgress: (progress) => {

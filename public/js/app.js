@@ -1269,74 +1269,75 @@ document.addEventListener('DOMContentLoaded', () => {
         audioElement: player.audio,
         context,
         onProgress: (progress) => {
-        const { state, message, progress: secs, result, error } = progress;
+          const { state, message, progress: secs, result, error } = progress;
 
-        if (ahaStatusText) {
-          ahaStatusText.textContent = message;
-        }
+          if (ahaStatusText) {
+            ahaStatusText.textContent = message;
+          }
 
-        if (state === 'LISTENING') {
-          if (ahaBtnText) ahaBtnText.textContent = `Escuchando... (${secs}s)`;
-        } else if (state === 'ANALYZING') {
-          if (ahaBtnText) ahaBtnText.textContent = '🧠 Analizando acústica...';
-        } else if (state === 'SUCCESS' && result) {
-          ahaListenBtn.classList.remove('is-listening');
-          if (ahaBtnText) ahaBtnText.textContent = '⚡ Escuchar e Identificar Ahora';
-          
-          if (ahaStatusIndicator) {
-            ahaStatusIndicator.innerHTML = `<span>✨ ¡Canción identificada! <strong>${result.song}</strong> (${result.composer})</span>`;
+          if (state === 'LISTENING') {
+            if (ahaBtnText) ahaBtnText.textContent = `Escuchando... (${secs}s)`;
+          } else if (state === 'ANALYZING') {
+            if (ahaBtnText) ahaBtnText.textContent = '🧠 Analizando acústica...';
+          } else if (state === 'SUCCESS' && result) {
+            ahaListenBtn.classList.remove('is-listening');
+            if (ahaBtnText) ahaBtnText.textContent = '⚡ Escuchar e Identificar Ahora';
+            
+            if (ahaStatusIndicator) {
+              ahaStatusIndicator.innerHTML = `<span>✨ ¡Canción identificada! <strong>${result.song}</strong> (${result.composer})</span>`;
+              setTimeout(() => {
+                if (ahaStatusIndicator) ahaStatusIndicator.style.display = 'none';
+              }, 7000);
+            }
+
+            // Transformar inmediatamente el banner con los datos identificados
+            if (npSongTitle) npSongTitle.textContent = result.song;
+            if (npComposerName) npComposerName.textContent = result.composer;
+            if (npAlbumName) npAlbumName.textContent = result.album || 'Banda Sonora / Álbum Oficial';
+            if (npBadgeText) npBadgeText.textContent = '⚡ IDENTIFICADO CON SHAZAM / AHA';
+            if (npLiveTag) npLiveTag.textContent = 'ACÚSTICO';
+            if (npMetaRow) npMetaRow.style.display = 'flex';
+            if (npEpgDetails) npEpgDetails.style.display = 'none';
+
+            if (result.artwork && npAlbumArt) {
+              npAlbumArt.src = result.artwork;
+              npAlbumArt.alt = `Carátula de ${result.song} - ${result.composer}`;
+            }
+
+            // Actualizar dial inferior del reproductor
+            if (currentStationDial) {
+              currentStationDial.textContent = `${result.composer} · ${result.song}`;
+            }
+
+            // Actualizar MediaSession nativo del sistema operativo
+            if ('mediaSession' in navigator && player.currentStation) {
+              navigator.mediaSession.metadata = new MediaMetadata({
+                title: result.song,
+                artist: `${result.composer} · ${player.currentStation.name}`,
+                album: result.album,
+                artwork: [
+                  { src: result.artwork || player.currentStation.logo, sizes: '512x512', type: 'image/jpeg' },
+                  { src: player.currentStation.logo, sizes: '320x180', type: 'image/svg+xml' }
+                ]
+              });
+            }
+          } else if (state === 'NOT_FOUND') {
+            ahaListenBtn.classList.remove('is-listening');
+            if (ahaBtnText) ahaBtnText.textContent = '⚡ Escuchar e Identificar Ahora';
             setTimeout(() => {
-              if (ahaStatusIndicator) ahaStatusIndicator.style.display = 'none';
-            }, 7000);
+              if (ahaStatusIndicator && !ahaShazamIdentifier.isRecording) {
+                ahaStatusIndicator.style.display = 'none';
+              }
+            }, 6000);
+          } else if (state === 'ERROR') {
+            ahaListenBtn.classList.remove('is-listening');
+            if (ahaBtnText) ahaBtnText.textContent = '⚡ Escuchar e Identificar Ahora';
+            setTimeout(() => {
+              if (ahaStatusIndicator && !ahaShazamIdentifier.isRecording) {
+                ahaStatusIndicator.style.display = 'none';
+              }
+            }, 6000);
           }
-
-          // Transformar inmediatamente el banner con los datos identificados
-          if (npSongTitle) npSongTitle.textContent = result.song;
-          if (npComposerName) npComposerName.textContent = result.composer;
-          if (npAlbumName) npAlbumName.textContent = result.album || 'Banda Sonora / Álbum Oficial';
-          if (npBadgeText) npBadgeText.textContent = '⚡ IDENTIFICADO CON SHAZAM / AHA';
-          if (npLiveTag) npLiveTag.textContent = 'ACÚSTICO';
-          if (npMetaRow) npMetaRow.style.display = 'flex';
-          if (npEpgDetails) npEpgDetails.style.display = 'none';
-
-          if (result.artwork && npAlbumArt) {
-            npAlbumArt.src = result.artwork;
-            npAlbumArt.alt = `Carátula de ${result.song} - ${result.composer}`;
-          }
-
-          // Actualizar dial inferior del reproductor
-          if (currentStationDial) {
-            currentStationDial.textContent = `${result.composer} · ${result.song}`;
-          }
-
-          // Actualizar MediaSession nativo del sistema operativo
-          if ('mediaSession' in navigator && player.currentStation) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-              title: result.song,
-              artist: `${result.composer} · ${player.currentStation.name}`,
-              album: result.album,
-              artwork: [
-                { src: result.artwork || player.currentStation.logo, sizes: '512x512', type: 'image/jpeg' },
-                { src: player.currentStation.logo, sizes: '320x180', type: 'image/svg+xml' }
-              ]
-            });
-          }
-        } else if (state === 'NOT_FOUND') {
-          ahaListenBtn.classList.remove('is-listening');
-          if (ahaBtnText) ahaBtnText.textContent = '⚡ Escuchar e Identificar Ahora';
-          setTimeout(() => {
-            if (ahaStatusIndicator && !ahaShazamIdentifier.isRecording) {
-              ahaStatusIndicator.style.display = 'none';
-            }
-          }, 6000);
-        } else if (state === 'ERROR') {
-          ahaListenBtn.classList.remove('is-listening');
-          if (ahaBtnText) ahaBtnText.textContent = '⚡ Escuchar e Identificar Ahora';
-          setTimeout(() => {
-            if (ahaStatusIndicator && !ahaShazamIdentifier.isRecording) {
-              ahaStatusIndicator.style.display = 'none';
-            }
-          }, 6000);
         }
       });
     });

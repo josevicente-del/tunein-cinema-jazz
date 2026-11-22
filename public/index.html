@@ -57,8 +57,24 @@
         />
       </div>
 
-      <!-- Acciones de cabecera: Botón PWA e indicador de streaming -->
+      <!-- Acciones de cabecera: Temporizador, Botón PWA e indicador de streaming -->
       <div class="header-actions">
+        <!-- Selector de Temporizador de apagado (Sleep Timer) -->
+        <div class="sleep-timer-wrapper" id="sleep-timer-wrapper">
+          <button class="header-timer-btn" id="sleep-timer-btn" aria-label="Temporizador de apagado" title="Temporizador de apagado (Sleep Timer)">
+            <span class="btn-icon">⏱️</span>
+            <span class="btn-text" id="sleep-timer-text">Temporizador</span>
+          </button>
+          <div class="sleep-timer-dropdown" id="sleep-timer-dropdown" style="display: none;">
+            <div class="sleep-dropdown-header">Apagar radio en:</div>
+            <button class="sleep-opt-btn" data-minutes="15">15 minutos</button>
+            <button class="sleep-opt-btn" data-minutes="30">30 minutos</button>
+            <button class="sleep-opt-btn" data-minutes="45">45 minutos</button>
+            <button class="sleep-opt-btn" data-minutes="60">60 minutos (1 hora)</button>
+            <button class="sleep-opt-btn cancel-btn" data-minutes="0">Desactivar</button>
+          </div>
+        </div>
+
         <!-- Botón de acceso directo al identificador de canciones en tiempo real -->
         <button class="header-identify-btn" id="header-identify-btn" aria-label="Identificar canción en emisión" title="Identificar canción en emisión">
           <span class="btn-icon">🔍</span>
@@ -267,6 +283,17 @@
 
             <!-- Contenedor dinámico de resultados de identificación -->
             <div class="np-search-results" id="np-search-results" style="display: none;"></div>
+
+            <!-- Historial de Temas Identificados Recientemente -->
+            <div class="np-history-container" id="np-history-container">
+              <div class="np-history-header">
+                <span class="np-history-title">🕒 Historial de Pistas Identificadas</span>
+                <button type="button" class="np-history-clear-btn" id="np-history-clear-btn" title="Limpiar historial">Borrar historial</button>
+              </div>
+              <div class="np-history-list" id="np-history-list">
+                <span class="np-history-empty">Aún no se ha identificado ninguna canción en esta sesión.</span>
+              </div>
+            </div>
           </div>
 
         </div>

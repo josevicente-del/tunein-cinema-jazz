@@ -5,17 +5,19 @@
  * y exclusión estricta de transmisiones de audio en directo para prevenir bloqueos de memoria.
  */
 
-const CACHE_NAME = 'tunein-cinema-jazz-v1.1';
+const CACHE_NAME = 'tunein-cinema-jazz-v2.0';
 
 // Recursos estáticos esenciales que componen la shell de la aplicación
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/style.css',
+  '/manifest.webmanifest',
   '/js/stations.js',
   '/js/player.js',
   '/js/app.js',
-  '/manifest.webmanifest',
+  '/js/audio-identifier.js',
+  '/js/epg-service.js',
   '/assets/icons/icon-192.svg',
   '/assets/icons/icon-512.svg',
   '/assets/logos/radio-klara.svg',
@@ -25,13 +27,16 @@ const PRECACHE_ASSETS = [
   '/assets/logos/cinemusic.svg',
   '/assets/logos/cinemix.svg',
   '/assets/logos/0n-movies.svg',
+  '/assets/logos/cinema-radio.svg',
+  '/assets/logos/la-musica-y-el-cine.svg',
   '/assets/logos/instrumental-jazz.svg',
   '/assets/logos/smooth-jazz.svg',
   '/assets/logos/jazzradio-berlin.svg',
   '/assets/logos/acid-jazz.svg',
   '/assets/logos/tsf-jazz.svg',
   '/assets/logos/jazz-classic.svg',
-  '/assets/logos/adroit-jazz.svg'
+  '/assets/logos/adroit-jazz.svg',
+  '/assets/logos/streaming-soundtracks.svg'
 ];
 
 // Instalación: Precargar recursos estáticos
@@ -85,16 +90,22 @@ self.addEventListener('fetch', (event) => {
     url.hostname.includes('mediacp.eu') ||
     url.hostname.includes('walmradio.com') ||
     url.hostname.includes('hostingradio.ru') ||
+    url.hostname.includes('tunerplay.com') ||
+    url.hostname.includes('mediasector.es') ||
+    url.hostname.includes('ztnr.rtve.es') ||
     req.headers.get('accept')?.includes('audio')
   );
 
-  if (isAudioStream || req.method !== 'GET') {
+  // Excluir endpoints de analytics
+  const isAnalytics = url.pathname.includes('/_vercel/insights');
+
+  if (isAudioStream || isAnalytics || req.method !== 'GET') {
     // Pasar directamente a la red sin intervenir
     event.respondWith(fetch(req));
     return;
   }
 
-  // Estrategia Stale-While-Revalidate para recursos estáticos locales
+  // Estrategia Stale-While-Revalidate para recursos estáticos
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
       const fetchPromise = fetch(req).then((networkResponse) => {

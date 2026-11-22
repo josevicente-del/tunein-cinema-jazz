@@ -872,6 +872,16 @@ document.addEventListener('DOMContentLoaded', () => {
           }, 7000);
         }
 
+        // Guardar automáticamente en el historial de pistas identificadas
+        if (typeof window.saveSongToHistory === 'function') {
+          window.saveSongToHistory({
+            song: result.song,
+            composer: result.composer,
+            album: result.album,
+            artwork: finalArtwork || station.logo
+          });
+        }
+
         // Programar reescaneo automático en 2.5 minutos (para cuando finalice la canción y empiece otra)
         clearTimeout(autoAcousticRescanTimer);
         autoAcousticRescanTimer = setTimeout(() => {
@@ -1460,6 +1470,143 @@ document.addEventListener('DOMContentLoaded', () => {
   // Sincronización con hash de URL si se seleccionó un acceso directo PWA
   const initialHash = window.location.hash.replace('#', '');
   const matchedStation = STATIONS.find(s => s.id === initialHash);
+
+  // =========================================================================
+  // GESTIÓN DEL HISTORIAL DE CANCIONES IDENTIFICADAS
+  // =========================================================================
+  const npHistoryList = document.getElementById('np-history-list');
+  const npHistoryClearBtn = document.getElementById('np-history-clear-btn');
+  let identifiedHistory = JSON.parse(localStorage.getItem('tunein_identified_history') || '[]');
+
+  function saveSongToHistory(songData) {
+    if (!songData || !songData.song || !songData.composer) return;
+    
+    // Evitar duplicar consecutivamente la misma canción
+    if (identifiedHistory.length > 0 && identifiedHistory[0].song.toLowerCase() === songData.song.toLowerCase()) {
+      return;
+    }
+
+    const item = {
+      song: songData.song,
+      composer: songData.composer,
+      album: songData.album || 'Banda Sonora Original',
+      artwork: songData.artwork || 'assets/logos/cinema-radio.svg',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      spotifyQuery: encodeURIComponent(`${songData.composer} ${songData.song}`),
+      ytQuery: encodeURIComponent(`${songData.composer} ${songData.song} soundtrack`)
+    };
+
+    identifiedHistory.unshift(item);
+    if (identifiedHistory.length > 15) {
+      identifiedHistory = identifiedHistory.slice(0, 15);
+    }
+
+    localStorage.setItem('tunein_identified_history', JSON.stringify(identifiedHistory));
+    renderSongHistory();
+  }
+
+  function renderSongHistory() {
+    if (!npHistoryList) return;
+    if (identifiedHistory.length === 0) {
+      npHistoryList.innerHTML = '<span class="np-history-empty">Aún no se ha identificado ninguna canción en esta sesión.</span>';
+      return;
+    }
+
+    npHistoryList.innerHTML = identifiedHistory.map(item => `
+      <div class="np-history-item">
+        <div class="np-history-item-left">
+          <img src="${item.artwork}" alt="${item.song}" class="np-history-art" onerror="this.src='assets/icons/icon-192.svg'" />
+          <div class="np-history-text">
+            <span class="np-history-song" title="${item.song}">${item.song}</span>
+            <span class="np-history-artist" title="${item.composer}">${item.composer} · <small>${item.timestamp}</small></span>
+          </div>
+        </div>
+        <div class="np-history-actions">
+          <a href="https://open.spotify.com/search/${item.spotifyQuery}" target="_blank" rel="noopener noreferrer" class="np-history-btn np-history-spotify" title="Buscar en Spotify">
+            Spotify
+          </a>
+          <a href="https://www.youtube.com/results?search_query=${item.ytQuery}" target="_blank" rel="noopener noreferrer" class="np-history-btn np-history-yt" title="Buscar en YouTube">
+            YouTube
+          </a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  if (npHistoryClearBtn) {
+    npHistoryClearBtn.addEventListener('click', () => {
+      identifiedHistory = [];
+      localStorage.removeItem('tunein_identified_history');
+      renderSongHistory();
+    });
+  }
+
+  renderSongHistory();
+  window.saveSongToHistory = saveSongToHistory;
+
+  // =========================================================================
+  // GESTIÓN DEL TEMPORIZADOR DE APAGADO (SLEEP TIMER)
+  // =========================================================================
+  const sleepTimerBtn = document.getElementById('sleep-timer-btn');
+  const sleepTimerDropdown = document.getElementById('sleep-timer-dropdown');
+  const sleepTimerText = document.getElementById('sleep-timer-text');
+  let sleepTimerId = null;
+  let sleepCountdownInterval = null;
+  let sleepRemainingSeconds = 0;
+
+  if (sleepTimerBtn && sleepTimerDropdown) {
+    sleepTimerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = sleepTimerDropdown.style.display === 'flex';
+      sleepTimerDropdown.style.display = isVisible ? 'none' : 'flex';
+    });
+
+    document.addEventListener('click', () => {
+      if (sleepTimerDropdown) sleepTimerDropdown.style.display = 'none';
+    });
+
+    const sleepOptions = sleepTimerDropdown.querySelectorAll('.sleep-opt-btn');
+    sleepOptions.forEach(opt => {
+      opt.addEventListener('click', () => {
+        const minutes = parseInt(opt.getAttribute('data-minutes'), 10);
+        clearTimeout(sleepTimerId);
+        clearInterval(sleepCountdownInterval);
+
+        if (minutes === 0) {
+          // Desactivar
+          sleepRemainingSeconds = 0;
+          sleepTimerText.textContent = 'Temporizador';
+          sleepTimerBtn.classList.remove('is-active');
+        } else {
+          // Activar temporizador
+          sleepRemainingSeconds = minutes * 60;
+          sleepTimerBtn.classList.add('is-active');
+
+          const updateTimerText = () => {
+            const m = Math.floor(sleepRemainingSeconds / 60);
+            const s = sleepRemainingSeconds % 60;
+            sleepTimerText.textContent = `Apagado en ${m}:${s < 10 ? '0' : ''}${s}`;
+          };
+
+          updateTimerText();
+
+          sleepCountdownInterval = setInterval(() => {
+            sleepRemainingSeconds--;
+            if (sleepRemainingSeconds <= 0) {
+              clearInterval(sleepCountdownInterval);
+              player.pause();
+              sleepTimerText.textContent = 'Temporizador';
+              sleepTimerBtn.classList.remove('is-active');
+            } else {
+              updateTimerText();
+            }
+          }, 1000);
+        }
+
+        sleepTimerDropdown.style.display = 'none';
+      });
+    });
+  }
 
   renderStations();
   const initialStation = matchedStation || STATIONS[0];
